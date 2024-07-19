@@ -62,6 +62,7 @@ try
         entry.Value.Dispose();
         clientDict.Remove(entry.Key);
     }
+    localSocket.Dispose();
 }
 catch (Exception e)
 {
