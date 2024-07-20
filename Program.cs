@@ -74,7 +74,7 @@ try
     }
     catch (Exception e)
     {
-        throw new CmdArgumentException(
+        throw new Exception(
             $"Unable to open local socket on port {localPort}. Ensure the port is not currently in use.",
             e
         );
