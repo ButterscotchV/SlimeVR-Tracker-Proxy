@@ -1,13 +1,59 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using SlimeVRTrackerProxy;
 
+var cfg = "slimefwd.cfg";
+var defaultPort = 6969;
+
+bool TryParseEndpoint(string addr, [NotNullWhen(true)] out IPEndPoint? endPoint)
+{
+    if (IPEndPoint.TryParse(addr, out endPoint))
+    {
+        // If the user didn't provide a port, we can just fill in the default port
+        if (endPoint.Port <= 0)
+        {
+            endPoint.Port = defaultPort;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+IPEndPoint ParseEndpoint(string addr)
+{
+    if (TryParseEndpoint(addr, out var remote))
+        return remote;
+    throw new CmdArgumentException("Remote endpoint is not valid (ex. 192.168.0.1:6969).");
+}
+
 try
 {
-    if (args.Length <= 0 || !IPEndPoint.TryParse(args[0], out var remote))
-        throw new CmdArgumentException("Remote endpoint is not valid (ex. 192.168.0.1:6969).");
+    IPEndPoint remote;
+    if (args.Length >= 1)
+    {
+        remote = ParseEndpoint(args[0]);
+    }
+    else
+    {
+        // No arguments given, let's prompt the user or load their previous response
+        if (File.Exists(cfg))
+        {
+            remote = ParseEndpoint(File.ReadAllText(cfg));
+        }
+        else
+        {
+            Console.Write(
+                "No remote endpoint provided, please enter one now (ex. 192.168.0.1:6969):\n> "
+            );
+            remote = ParseEndpoint(Console.ReadLine() ?? "");
+            File.WriteAllText(cfg, remote.ToString());
+        }
+    }
 
-    var localPort = 6969;
+    var localPort = defaultPort;
     if (args.Length >= 2)
     {
         if (int.TryParse(args[1], out var argPort) && argPort > 0)
@@ -52,7 +98,9 @@ try
         }
     }
 
-    Console.WriteLine($"Listening on local port {localPort}, forwarding to {remote}.\nPress enter at any time to stop.");
+    Console.WriteLine(
+        $"Listening on local port {localPort}, forwarding to {remote}.\nPress enter at any time to stop."
+    );
     var _ = ClientToRemote(cancelToken.Token);
     Console.ReadLine();
 
@@ -69,7 +117,9 @@ catch (Exception e)
     Console.Error.WriteLine(e);
 
     if (e is CmdArgumentException)
-        Console.WriteLine("\nUsage: slimefwd.exe <Remote Endpoint (ex. 192.168.0.1:6969)> [Local Port (ex. 6969)]");
+        Console.WriteLine(
+            "\nUsage: slimefwd.exe <Remote Endpoint (ex. 192.168.0.1:6969)> [Local Port (ex. 6969)]"
+        );
 
     Console.WriteLine("Press any key to exit...");
     Console.ReadKey();

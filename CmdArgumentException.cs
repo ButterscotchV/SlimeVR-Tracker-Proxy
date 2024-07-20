@@ -4,20 +4,15 @@ namespace SlimeVRTrackerProxy
 {
     internal class CmdArgumentException : Exception
     {
-        public CmdArgumentException()
-        {
-        }
+        public CmdArgumentException() { }
 
-        public CmdArgumentException(string? message) : base(message)
-        {
-        }
+        public CmdArgumentException(string? message)
+            : base(message) { }
 
-        public CmdArgumentException(string? message, Exception? innerException) : base(message, innerException)
-        {
-        }
+        public CmdArgumentException(string? message, Exception? innerException)
+            : base(message, innerException) { }
 
-        protected CmdArgumentException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
+        protected CmdArgumentException(SerializationInfo info, StreamingContext context)
+            : base(info, context) { }
     }
 }
