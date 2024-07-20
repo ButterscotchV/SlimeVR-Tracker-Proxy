@@ -42,6 +42,7 @@ try
         if (File.Exists(cfg))
         {
             remote = ParseEndpoint(File.ReadAllText(cfg));
+            Console.WriteLine($"Loaded remote endpoint from \"{cfg}\" ({remote}).");
         }
         else
         {
@@ -49,7 +50,9 @@ try
                 "No remote endpoint provided, please enter one now (ex. 192.168.0.1:6969):\n> "
             );
             remote = ParseEndpoint(Console.ReadLine() ?? "");
+
             File.WriteAllText(cfg, remote.ToString());
+            Console.WriteLine($"Valid remote endpoint provided, saved to \"{cfg}\".");
         }
     }
 
@@ -64,7 +67,19 @@ try
 
     var cancelToken = new CancellationTokenSource();
 
-    var localSocket = new UdpClient(localPort);
+    UdpClient localSocket;
+    try
+    {
+        localSocket = new UdpClient(localPort);
+    }
+    catch (Exception e)
+    {
+        throw new CmdArgumentException(
+            $"Unable to open local socket on port {localPort}. Ensure the port is not currently in use.",
+            e
+        );
+    }
+
     var clientDict = new Dictionary<IPEndPoint, UdpClient>();
     var clientTasks = new List<Task>();
 
