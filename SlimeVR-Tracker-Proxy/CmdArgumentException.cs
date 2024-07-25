@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 namespace SlimeVRTrackerProxy
 {
     internal class CmdArgumentException : Exception
@@ -11,8 +9,5 @@ namespace SlimeVRTrackerProxy
 
         public CmdArgumentException(string? message, Exception? innerException)
             : base(message, innerException) { }
-
-        protected CmdArgumentException(SerializationInfo info, StreamingContext context)
-            : base(info, context) { }
     }
 }

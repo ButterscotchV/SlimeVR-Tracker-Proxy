@@ -482,7 +482,3 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
-
-# SlimeFwd
-/Release_Builds/
-/Releases/

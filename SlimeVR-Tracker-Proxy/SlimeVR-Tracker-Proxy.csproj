@@ -8,6 +8,8 @@
     <Nullable>enable</Nullable>
     <AssemblyName>slimefwd</AssemblyName>
     <Copyright>Copyright (c) 2024 Butterscotch!</Copyright>
+    <PublishTrimmed>True</PublishTrimmed>
+    <PublishSingleFile>True</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
