@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using SlimeVRTrackerProxy;
 
-var cfg = "slimefwd.cfg";
+var cfg = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "slimefwd.cfg");
 var defaultPort = 6969;
 
 bool TryParseEndpoint(string addr, [NotNullWhen(true)] out IPEndPoint? endPoint)
