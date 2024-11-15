@@ -43,10 +43,7 @@ jobs:
 
       - name: Install Linux Arm64 AOT dependencies
         if: matrix.os.cs == 'linux-arm64'
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: clang llvm binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu zlib1g-dev:arm64
-          version: 1
+        run: sudo apt update && sudo apt install -y clang llvm binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu zlib1g-dev:arm64
 
       - name: Restore dependencies
         run: dotnet restore
