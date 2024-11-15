@@ -3,13 +3,13 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>SlimeVRTrackerProxy</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>slimefwd</AssemblyName>
     <Copyright>Copyright (c) 2024 Butterscotch!</Copyright>
     <PublishTrimmed>True</PublishTrimmed>
     <PublishSingleFile>True</PublishSingleFile>
+    <RootNamespace>SlimeFwd</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

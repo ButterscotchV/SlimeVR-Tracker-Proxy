@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlimeVR-Tracker-Proxy", "SlimeVR-Tracker-Proxy\SlimeVR-Tracker-Proxy.csproj", "{1FDC41BC-DDB0-4AAB-9127-C17BFA959CDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlimeFwd", "SlimeFwd\SlimeFwd.csproj", "{1FDC41BC-DDB0-4AAB-9127-C17BFA959CDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

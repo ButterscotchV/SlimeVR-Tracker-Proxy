@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
-using SlimeVRTrackerProxy;
+using SlimeFwd;
 
 var cfg = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "slimefwd.cfg");
 var defaultPort = 6969;

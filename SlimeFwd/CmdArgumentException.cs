@@ -1,4 +1,4 @@
-namespace SlimeVRTrackerProxy
+namespace SlimeFwd
 {
     internal class CmdArgumentException : Exception
     {
