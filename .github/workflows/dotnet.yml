@@ -43,10 +43,7 @@ jobs:
 
       - name: Install Linux Arm64 AOT dependencies
         if: matrix.os.cs == 'linux-arm64'
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: binutils-aarch64-linux-gnu
-          version: 1
+        run: sudo apt install -y binutils-aarch64-linux-gnu
 
       - name: Restore dependencies
         run: dotnet restore
