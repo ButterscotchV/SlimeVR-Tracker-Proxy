@@ -5,7 +5,7 @@ name: .NET
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
   workflow_dispatch:
   create:
@@ -16,71 +16,85 @@ jobs:
       fail-fast: false
       matrix:
         os:
-        - gh: ubuntu-22.04
-          cs: linux-x64
-        - gh: ubuntu-22.04
-          cs: linux-arm64
-        - gh: windows-latest
-          cs: win-x64
-        - gh: windows-latest
-          cs: win-arm64
-        - gh: macos-latest
-          cs: osx-x64
-        - gh: macos-latest
-          cs: osx-arm64
+          - gh: ubuntu-22.04
+            cs: linux-x64
+          - gh: ubuntu-22.04
+            cs: linux-arm64
+          - gh: windows-latest
+            cs: win-x64
+          - gh: windows-latest
+            cs: win-arm64
+          - gh: macos-latest
+            cs: osx-x64
+          - gh: macos-latest
+            cs: osx-arm64
 
     runs-on: ${{ matrix.os.gh }}
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-        
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
-      # Windows behaves poorly with CSharpier, so let's ignore it
-    - if: matrix.os.gh != 'windows-latest'
-      name: Build
-      run: dotnet build --no-restore -c Release
+      - name: Install Linux Arm64 AOT dependencies
+        if: matrix.os.cs == 'linux-arm64'
+        run: |
+          sudo dpkg --add-architecture arm64
+          sudo bash -c 'cat > /etc/apt/sources.list.d/arm64.list <<EOF
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy main restricted
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main restricted
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-backports main restricted universe multiverse
+          EOF'
+          sudo sed -i -e 's/deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
+          sudo sed -i -e 's/deb mirror/deb [arch=amd64] mirror/g' /etc/apt/sources.list
+          sudo apt update
+          sudo apt install -y clang llvm binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu zlib1g-dev:arm64
 
-    - name: Test
-      run: dotnet test --verbosity normal
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Copy additional release files
-      run: |
-        mkdir -p builds/cli_${{ matrix.os.cs }}/
-        cp LICENSE builds/cli_${{ matrix.os.cs }}/
-        mkdir -p builds/cli_aot_${{ matrix.os.cs }}/
-        cp LICENSE builds/cli_aot_${{ matrix.os.cs }}/
+        # Windows behaves poorly with CSharpier, so let's ignore it
+      - if: matrix.os.gh != 'windows-latest'
+        name: Build
+        run: dotnet build --no-restore -c Release
 
-    - name: Publish CLI
-      run: dotnet publish SlimeFwd -c Release -r ${{ matrix.os.cs }} -o builds/cli_${{ matrix.os.cs }} -p:CSharpier_Bypass=true
+      - name: Test
+        run: dotnet test --verbosity normal
 
-    - name: Upload a build artifact (CLI)
-      uses: actions/upload-artifact@v4
-      with:
-        name: SlimeFwd_${{ matrix.os.cs }}
-        # A file, directory or wildcard pattern that describes what to upload
-        path: |
-          builds/cli_${{ matrix.os.cs }}/slimefwd.exe
-          builds/cli_${{ matrix.os.cs }}/slimefwd
-          builds/cli_${{ matrix.os.cs }}/LICENSE
+      - name: Copy additional release files
+        run: |
+          mkdir -p builds/cli_${{ matrix.os.cs }}/
+          cp LICENSE builds/cli_${{ matrix.os.cs }}/
+          mkdir -p builds/cli_aot_${{ matrix.os.cs }}/
+          cp LICENSE builds/cli_aot_${{ matrix.os.cs }}/
 
-    - name: Publish CLI AOT
-      run: dotnet publish SlimeFwd -c Release -r ${{ matrix.os.cs }} -o builds/cli_aot_${{ matrix.os.cs }} -p:PublishAot=true -p:PublishSingleFile=false -p:CSharpier_Bypass=true
+      - name: Publish CLI
+        run: dotnet publish SlimeFwd -c Release -r ${{ matrix.os.cs }} -o builds/cli_${{ matrix.os.cs }} -p:CSharpier_Bypass=true
 
-    - name: Upload a build artifact (CLI AOT)
-      uses: actions/upload-artifact@v4
-      with:
-        name: SlimeFwd_AOT_${{ matrix.os.cs }}
-        # A file, directory or wildcard pattern that describes what to upload
-        path: |
-          builds/cli_aot_${{ matrix.os.cs }}/slimefwd.exe
-          builds/cli_aot_${{ matrix.os.cs }}/slimefwd
-          builds/cli_aot_${{ matrix.os.cs }}/LICENSE
+      - name: Upload a build artifact (CLI)
+        uses: actions/upload-artifact@v4
+        with:
+          name: SlimeFwd_${{ matrix.os.cs }}
+          # A file, directory or wildcard pattern that describes what to upload
+          path: |
+            builds/cli_${{ matrix.os.cs }}/slimefwd.exe
+            builds/cli_${{ matrix.os.cs }}/slimefwd
+            builds/cli_${{ matrix.os.cs }}/LICENSE
+
+      - name: Publish CLI AOT
+        run: dotnet publish SlimeFwd -c Release -r ${{ matrix.os.cs }} -o builds/cli_aot_${{ matrix.os.cs }} -p:PublishAot=true -p:PublishSingleFile=false -p:CSharpier_Bypass=true
+
+      - name: Upload a build artifact (CLI AOT)
+        uses: actions/upload-artifact@v4
+        with:
+          name: SlimeFwd_AOT_${{ matrix.os.cs }}
+          # A file, directory or wildcard pattern that describes what to upload
+          path: |
+            builds/cli_aot_${{ matrix.os.cs }}/slimefwd.exe
+            builds/cli_aot_${{ matrix.os.cs }}/slimefwd
+            builds/cli_aot_${{ matrix.os.cs }}/LICENSE
