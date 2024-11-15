@@ -45,7 +45,7 @@ jobs:
         if: matrix.os.cs == 'linux-arm64'
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: binutils-aarch64-linux-gnu gcc-multilib
+          packages: clang llvm binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu zlib1g-dev:arm64
           version: 1
 
       - name: Restore dependencies
